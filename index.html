@@ -3,41 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Women's Day</title>
+    <title>Happy Women's Day 💖</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&family=Comic+Neue:wght@700&display=swap');
+        
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             text-align: center;
             padding: 50px;
-            background-image: url(https://i.pinimg.com/736x/d9/da/04/d9da0466ba5c43f0cdd841861c70ac51.jpg); /* Replace with your actual image file or URL */
+            background-image: url(https://i.pinimg.com/736x/d9/da/04/d9da0466ba5c43f0cdd841861c70ac51.jpg); /* Replace with your image */
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             color: white;
-            overflow: hidden; /* Prevents scrollbars due to animation */
+            position: relative;
+            overflow: hidden;
         }
         .container {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.9);
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             display: inline-block;
             color: black;
-            position: relative;
-            z-index: 10;
+            font-size: 18px;
         }
-        input {
+        h2 {
+            font-family: 'Comic Neue', cursive;
+            color: #e91e63;
+        }
+        .game-area {
+            position: relative;
+            height: 200px;
+            background: #ffe4e1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .heart {
+            position: absolute;
+            font-size: 24px;
+            color: red;
+            cursor: pointer;
+        }
+        input, button {
             padding: 10px;
             margin: 10px;
-            border: 1px solid #ccc;
             border-radius: 5px;
+            border: none;
         }
         button {
             background-color: #e91e63;
             color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
+            font-weight: bold;
             cursor: pointer;
         }
         .message {
@@ -45,114 +63,110 @@
             font-size: 18px;
             font-weight: bold;
         }
-        /* Heart Animation */
-        .heart {
+        .falling-heart {
             position: absolute;
             font-size: 24px;
-            color: #ff4081;
-            cursor: pointer;
-            animation: fall 4s linear infinite;
+            color: pink;
+            animation: fall 2s linear;
         }
         @keyframes fall {
-            from { transform: translateY(-100px); opacity: 1; }
-            to { transform: translateY(100vh); opacity: 0; }
-        }
-        .hidden {
-            display: none;
+            0% { transform: translateY(-10px); opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
         }
     </style>
 </head>
 <body>
-
-    <!-- Mini-Game Section -->
-    <div id="gameContainer">
-        <h2>Catch 5 Hearts to Unlock Your Message! 💖</h2>
-        <p>Click on the hearts before they disappear!</p>
+    <div class="container">
+        <h2>Catch 5 Hearts to Unlock the Surprise! 💖</h2>
+        <div class="game-area" id="gameArea"></div>
+        <div id="gameMessage">Hearts Collected: <span id="score">0</span>/5</div>
+        
+        <div id="nameSection" style="display:none;">
+            <h2>Enter Your Name</h2>
+            <input type="text" id="nameInput" placeholder="Your Name">
+            <button onclick="showMessage()">Celebrate</button>
+            <div class="message" id="message"></div>
+        </div>
     </div>
-
-    <!-- Name Input Section (Initially Hidden) -->
-    <div class="container hidden" id="nameContainer">
-        <h2>Enter Your Name</h2>
-        <input type="text" id="nameInput" placeholder="Your Name">
-        <button onclick="showMessage()">Celebrate</button>
-        <div class="message" id="message"></div>
-    </div>
-
+    
     <script>
-        let heartsCaught = 0;
-
-        function createFallingHeart() {
-            let heart = document.createElement("div");
-            heart.className = "heart";
+        let score = 0;
+        let gameArea = document.getElementById("gameArea");
+        let gameInterval = setInterval(() => {
+            let heart = document.createElement("span");
             heart.innerHTML = "❤️";
-            document.body.appendChild(heart);
-
-            // Random horizontal position
-            let startX = Math.random() * window.innerWidth;
-            heart.style.left = `${startX}px`;
-            heart.style.top = "-50px";
-
-            // Remove heart after it falls
-            setTimeout(() => {
-                if (document.body.contains(heart)) {
-                    heart.remove();
-                }
-            }, 4000);
-
-            // Click event to catch the heart
-            heart.onclick = function () {
-                heartsCaught++;
+            heart.classList.add("heart");
+            heart.style.left = Math.random() * 90 + "%";
+            heart.style.top = "10px";
+            gameArea.appendChild(heart);
+            heart.onclick = function() {
                 heart.remove();
-                if (heartsCaught >= 5) {
-                    unlockNextStep();
+                score++;
+                document.getElementById("score").innerText = score;
+                if (score >= 5) {
+                    clearInterval(gameInterval);
+                    gameArea.innerHTML = "";
+                    document.getElementById("nameSection").style.display = "block";
+                    document.getElementById("gameMessage").innerText = "You did it! Now enter your name!";
                 }
-            };
-        }
-
-        function unlockNextStep() {
-            document.getElementById("gameContainer").classList.add("hidden");
-            document.getElementById("nameContainer").classList.remove("hidden");
-        }
-
-        // Generate hearts every second
-        setInterval(createFallingHeart, 1000);
-
+            }
+            setTimeout(() => heart.remove(), 2000);
+        }, 1000);
+        
         function showMessage() {
             var name = document.getElementById("nameInput").value;
             var messageDiv = document.getElementById("message");
-
+            
             var messages = [
                 "🌸 Happy Women's Day, {name}! 🌸 Keep shining and inspiring the world!", 
                 "💖 You are strong, fearless, and unstoppable, {name}! Happy Women's Day!", 
-                "🌼 Wishing you love, strength, and endless happiness, {name}! 💐"
+                "🌼 Wishing you love, strength, and endless happiness, {name}! 💐", 
+                "✨ The world is brighter because of you, {name}! Keep glowing! 🌟", 
+                "🌺 Celebrate yourself today and always, {name}! Happy Women's Day!", 
+                "💪 Strong, beautiful, and inspiring—that’s you, {name}! 💕", 
+                "🎉 Keep making history in your own way, {name}! Happy Women's Day!", 
+                "🌈 You are a rainbow in someone’s sky, {name}! Keep being amazing!", 
+                "💐 A woman like you deserves all the love and happiness in the world! 🌸", 
+                "🦋 The world is a better place with you in it, {name}! 💖", 
+                "🌞 Shine bright, {name}! You are a force to be reckoned with! ✨", 
+                "🎶 Keep dancing through life with grace and confidence, {name}!", 
+                "💃 Today is for YOU, {name}! Keep conquering the world! 🌍", 
+                "🌟 Your kindness, strength, and beauty make the world wonderful! 💕", 
+                "🏆 Every day is Women's Day when you believe in yourself, {name}!", 
+                "💖 You are magic, {name}! Keep spreading joy and love! 🌸", 
+                "🌍 The future is bright because of women like you, {name}! 🚀", 
+                "💎 Keep shining like the diamond you are, {name}! 💖", 
+                "🔥 A strong woman stands tall no matter what—just like you, {name}!", 
+                "🌹 Wishing you all the success and happiness you deserve, {name}!", 
+                "💫 Nothing can stop you, {name}! You are powerful beyond measure!", 
+                "🎨 Life is your canvas, {name}—keep painting it beautifully! 🎭", 
+                "🌜 The moon and stars envy your radiance, {name}! Keep glowing! ✨", 
+                "💕 The world needs more women like you, {name}! Keep shining!", 
+                "🌟 May your light never fade, {name}! You are extraordinary!", 
+                "💖 Dream big, work hard, and never stop believing in yourself! 🎯", 
+                "🎇 Your brilliance lights up the world, {name}! Keep being awesome!", 
+                "🌷 Your strength and kindness make the world a better place! 💕", 
+                "🌻 Keep blooming into the wonderful person you are, {name}!", 
+                "💕 A woman like you deserves to be celebrated every day! 🎉"
             ];
             
             if (name.trim() !== "") {
                 var randomMessage = messages[Math.floor(Math.random() * messages.length)];
                 messageDiv.innerHTML = randomMessage.replace("{name}", `<strong>${name}</strong>`);
-                createCelebrationHearts();
+                for (let i = 0; i < 15; i++) {
+                    let heart = document.createElement("span");
+                    heart.innerHTML = "💖";
+                    heart.classList.add("falling-heart");
+                    heart.style.left = Math.random() * 100 + "%";
+                    heart.style.top = "-10px";
+                    document.body.appendChild(heart);
+                    setTimeout(() => heart.remove(), 2000);
+                }
             } else {
                 messageDiv.innerHTML = "Please enter your name to get your message.";
             }
         }
-
-        function createCelebrationHearts() {
-            for (let i = 0; i < 10; i++) {  
-                let heart = document.createElement("div");
-                heart.className = "heart";
-                heart.innerHTML = "💖";
-                document.body.appendChild(heart);
-
-                let startX = Math.random() * window.innerWidth;
-                heart.style.left = `${startX}px`;
-                heart.style.top = window.innerHeight - 50 + "px";
-
-                setTimeout(() => {
-                    heart.remove();
-                }, 2000);
-            }
-        }
     </script>
-
 </body>
 </html>
+
